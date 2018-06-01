@@ -18,7 +18,7 @@ fn play_game() {
     // create the empty array of values 0 = x, 1 = O
     let mut vals = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
     loop {
-        let cell = ask_move(); // ask and return
+        let cell = ask_move(vals); // ask and return
         move_count += 1;
         modify_vals(&mut vals, cell, turn); // modify vals
         print_board(vals);
@@ -48,7 +48,7 @@ fn print_board(vals: [char; 9]) {
     println!("|{}|{}|{}|", vals[6], vals[7], vals[8]);
 }
 
-fn ask_move() -> (usize) {
+fn ask_move(vals: [char; 9]) -> (usize) {
     let cell = loop {
         println!("Enter cell number (1-9): ");
         let mut cell = String::new();
@@ -63,7 +63,11 @@ fn ask_move() -> (usize) {
         // the match above already limits numbers above 255
         // and values that are negative, just check in bounds
         if cell > 0 && cell <= 9 {
-            break cell;
+            if vals[cell-1] != ' ' { // if the spot is already taken
+                continue;
+            } else { // use that value
+                break cell;
+            }
         } else {
             continue;
         }
@@ -86,7 +90,7 @@ fn check_win(vals: [char; 9]) -> (bool) {
     let mut win = false;
     // check columns (0,3,6) (1,4,7) (2,5,8)
     for i in 0..3 {
-        if vals[i] == vals[i+3] && vals[i] == vals[i+6] {
+        if vals[i] == vals[i+3] && vals[i] == vals[i+6] && vals[i] != ' ' {
             // winning condition - exit
             win = true;
             break;
@@ -96,7 +100,7 @@ fn check_win(vals: [char; 9]) -> (bool) {
     // check rows (0,1,2) (3,4,5) (6,7,8)
     for i in 0..9 {
         if i == 0 || i == 3 || i == 6 {
-            if vals[i] == vals[i+1] && vals[i] == vals[i+2] {
+            if vals[i] == vals[i+1] && vals[i] == vals[i+2] && vals[i] != ' '{
                 // winning condition - exit
                 win = true;
                 break;
@@ -105,13 +109,13 @@ fn check_win(vals: [char; 9]) -> (bool) {
     }
 
     // check diag (0, 4, 8)
-    if vals[0] == vals[4] && vals[0] == vals[8] {
+    if vals[0] == vals[4] && vals[0] == vals[8] && vals[0] != ' '{
         // winning condition - exit
         win = true;
     }
 
     //check anti-diag (2, 4, 6)
-    if vals[2] == vals[4] && vals[2] == vals[6] {
+    if vals[2] == vals[4] && vals[2] == vals[6] && vals[2] != ' ' {
         // winning condition - exit
         win = true;
     }
